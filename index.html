@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Scanner</title>
+    <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        #qr-reader {
+            width: 300px;
+            margin: auto;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Scan QR Code</h2>
+    <div id="qr-reader"></div>
+    <div id="result"></div>
+
+    <script>
+        function sendToServer(username, email) {
+            fetch('https://your-server-url/scan', {  // Replace with your actual server URL
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' },
+                mode: 'cors',
+                credentials: 'include',
+                body: JSON.stringify({ username, email })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('result').innerText = data.message;
+            })
+            .catch(error => {
+                document.getElementById('result').innerText = 'Error: ' + error;
+            });
+        }
+
+        function onScanSuccess(decodedText) {
+            try {
+                const userData = JSON.parse(decodedText); 
+                if (userData.username && userData.email) {
+                    sendToServer(userData.username, userData.email);
+                } else {
+                    document.getElementById('result').innerText = 'Invalid QR Code';
+                }
+            } catch (e) {
+                document.getElementById('result').innerText = 'QR Code should contain valid JSON';
+            }
+        }
+
+        function onScanError(errorMessage) {
+            console.warn(errorMessage);
+        }
+
+        const html5QrCode = new Html5Qrcode("qr-reader");
+        html5QrCode.start(
+            { facingMode: "environment" }, // Use rear camera
+            { fps: 10, qrbox: 250 },
+            onScanSuccess,
+            onScanError
+        );
+    </script>
+
+</body>
+</html>

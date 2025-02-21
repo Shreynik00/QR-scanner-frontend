@@ -30,8 +30,8 @@
 
     <script>
         function sendToServer(username, email) {
-            fetch('https://your-server-url/scan', {  // Replace with your actual server URL
-                method: 'GET',
+            fetch('https://your-backend-url/scan', {  // Replace with your actual backend URL
+                method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 mode: 'cors',
                 credentials: 'include',
